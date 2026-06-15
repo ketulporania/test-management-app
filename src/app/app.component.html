@@ -1,0 +1,10 @@
+<div [class.invisible]="loadingService.isLoading()">
+    <router-outlet />
+    <app-toast />
+</div>
+
+@if (loadingService.isLoading()) {
+<div class="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center gap-4">
+    <app-loading-spinner />
+</div>
+}

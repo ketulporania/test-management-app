@@ -1,0 +1,8 @@
+{
+    "/api": {
+      "target": "https://admin-moderator-backend-staging.up.railway.app",
+      "secure": true,
+      "changeOrigin": true,
+      "logLevel": "debug"
+    }
+  }

@@ -1,0 +1,45 @@
+/* You can add global styles to this file, and also import other style files */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+@import 'tailwindcss';
+
+* {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+button {
+    cursor: pointer;
+}
+
+button,
+a,
+[role="button"] {
+    cursor: pointer;
+}
+
+body {
+    overflow-x: hidden;
+}
+
+.shimmer {
+    background: linear-gradient(90deg,
+            #f0f0f0 25%,
+            #e0e0e0 50%,
+            #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+.swal2-popup {
+    border-radius: 16px !important;
+}

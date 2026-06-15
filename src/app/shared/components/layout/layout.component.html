@@ -1,0 +1,177 @@
+<!-- <div class="flex h-screen bg-slate-50">
+
+    <aside class="w-56 bg-white border-r border-slate-200 flex flex-col">
+  
+      <div class="h-14 px-5 flex items-center border-b border-slate-200">
+        <img src="pr_logo.jpg" alt="PrepRoute" class="h-12 w-auto"/>
+      </div>
+  
+      <nav class="flex-1 px-3 py-4 space-y-1">
+        
+        <a  routerLink="/dashboard"
+          class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition-all cursor-pointer"
+          [class.bg-blue-50]="isActive(['/dashboard'])"
+          [class.text-blue-600]="isActive(['/dashboard'])"
+          [class.font-semibold]="isActive(['/dashboard'])">
+          <i class="fa-solid fa-gauge-high w-4 text-center"
+            [class.text-blue-600]="isActive(['/dashboard'])"
+            [class.text-slate-400]="!isActive(['/dashboard'])">
+          </i>
+          Dashboard
+        </a>
+  
+        
+        <a  routerLink="/tests/new"
+          class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition-all cursor-pointer"
+          [class.bg-blue-50]="isActive(['/new', '/edit', '/questions', '/preview'])"
+          [class.text-blue-600]="isActive(['/new', '/edit', '/questions', '/preview'])"
+          [class.font-semibold]="isActive(['/new', '/edit', '/questions', '/preview'])">
+          <i class="fa-solid fa-file-pen w-4 text-center"
+            [class.text-blue-600]="isActive(['/new', '/edit', '/questions', '/preview'])"
+            [class.text-slate-400]="!isActive(['/new', '/edit', '/questions', '/preview'])">
+          </i>
+          Manage Test
+        </a>
+      </nav>
+  
+      <div class="flex items-center gap-2.5 ml-2 mb-2 cursor-pointer hover:bg-slate-50 px-2 py-1.5 rounded-lg transition-colors">
+        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 text-white flex items-center justify-center text-sm font-bold">
+          A
+        </div>
+        <div class="flex flex-col">
+          <span class="text-sm font-semibold text-slate-700 leading-tight">Admin</span>
+        </div>
+      </div>
+  
+    </aside>
+  
+    <div class="flex-1 flex flex-col overflow-hidden">
+  
+      <header class="h-14 bg-white border-b border-slate-200 px-6 flex justify-between items-center">
+  
+        <h1 class="text-base font-semibold text-slate-700">
+          {{ pageTitle() }}
+        </h1>
+  
+        <div class="flex items-center gap-4">
+     
+          <button
+            (click)="auth.logout()"
+            class="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-red-500 bg-red-50 border border-red-100 rounded-lg hover:bg-red-100 transition cursor-pointer">
+            <i class="fa-solid fa-right-from-bracket text-xs"></i>
+            Logout
+          </button>
+  
+        </div>
+      </header>
+  
+      <div class="flex-1 overflow-auto p-6">
+        <router-outlet></router-outlet>
+      </div>
+  
+    </div>
+  </div> -->
+
+  <div class="flex h-screen bg-slate-50">
+
+    <!-- Mobile overlay -->
+    @if (sidebarOpen) {
+      <div
+        class="fixed inset-0 bg-black/40 z-20 lg:hidden"
+        (click)="sidebarOpen = false">
+      </div>
+    }
+  
+    <!-- Sidebar -->
+    <aside class="fixed lg:static inset-y-0 left-0 z-30 w-56 bg-white border-r border-slate-200 flex flex-col transition-transform duration-300"
+      [class.-translate-x-full]="!sidebarOpen"
+      [class.translate-x-0]="sidebarOpen"
+      [class.lg:translate-x-0]="true">
+  
+      <!-- Logo -->
+
+      <div class="h-14 px-5 flex items-center border-b border-slate-200">
+        <img src="pr_logo.jpg" alt="PrepRoute" class="h-12 w-auto"/>
+      </div>
+  
+      <!-- Nav Links -->
+      <nav class="flex-1 px-3 py-4 space-y-1">
+        
+        <a  routerLink="/dashboard"
+          (click)="sidebarOpen = false"
+          class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition-all cursor-pointer"
+          [class.bg-blue-50]="isActive(['/dashboard'])"
+          [class.text-blue-600]="isActive(['/dashboard'])"
+          [class.font-semibold]="isActive(['/dashboard'])">
+          <i class="fa-solid fa-gauge-high w-4 text-center"
+            [class.text-blue-600]="isActive(['/dashboard'])"
+            [class.text-slate-400]="!isActive(['/dashboard'])">
+          </i>
+          Dashboard
+        </a>
+  
+        
+        <a  routerLink="/tests/new"
+          (click)="sidebarOpen = false"
+          class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition-all cursor-pointer"
+          [class.bg-blue-50]="isActive(['/new', '/edit', '/questions', '/preview'])"
+          [class.text-blue-600]="isActive(['/new', '/edit', '/questions', '/preview'])"
+          [class.font-semibold]="isActive(['/new', '/edit', '/questions', '/preview'])">
+          <i class="fa-solid fa-file-pen w-4 text-center"
+            [class.text-blue-600]="isActive(['/new', '/edit', '/questions', '/preview'])"
+            [class.text-slate-400]="!isActive(['/new', '/edit', '/questions', '/preview'])">
+          </i>
+          Manage Test
+        </a>
+      </nav>
+  
+      <!-- Sidebar Footer -->
+      <div class="flex items-center gap-2.5 ml-2 mb-2 cursor-pointer hover:bg-slate-50 px-2 py-1.5 rounded-lg transition-colors">
+        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 text-white flex items-center justify-center text-sm font-bold">
+          A
+        </div>
+        <div class="flex flex-col">
+          <span class="text-sm font-semibold text-slate-700 leading-tight">Admin</span>
+        </div>
+      </div>
+  
+    </aside>
+  
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col overflow-hidden min-w-0">
+  
+      <!-- Navbar -->
+      <header class="h-14 bg-white border-b border-slate-200 px-4 md:px-6 flex justify-between items-center shrink-0">
+  
+        <div class="flex items-center gap-3">
+          <!-- Hamburger — mobile only -->
+          <button
+            class="lg:hidden w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 transition-colors"
+            (click)="sidebarOpen = !sidebarOpen">
+            <i class="fa-solid fa-bars text-slate-600"></i>
+          </button>
+  
+          <h1 class="text-sm md:text-base font-semibold text-slate-700 truncate">
+            {{ pageTitle() }}
+          </h1>
+        </div>
+  
+        <div class="flex items-center gap-2 md:gap-3">   
+          <!-- Logout -->
+          <button
+            (click)="auth.logout()"
+            class="inline-flex items-center gap-1.5 px-2 md:px-3 py-1.5 text-sm font-medium text-red-500 bg-red-50 border border-red-100 rounded-lg hover:bg-red-100 transition cursor-pointer">
+            <i class="fa-solid fa-right-from-bracket text-xs"></i>
+            <span class="hidden sm:inline">Logout</span>
+          </button>
+  
+        </div>
+      </header>
+  
+      <!-- Page Content -->
+      <div class="flex-1 overflow-auto p-3 md:p-6">
+        <router-outlet></router-outlet>
+      </div>
+  
+    </div>
+  </div>

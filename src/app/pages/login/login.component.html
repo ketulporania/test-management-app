@@ -1,0 +1,120 @@
+<div class="min-h-screen flex items-center justify-center bg-gray-50">
+  <div class="bg-white p-10 rounded-2xl shadow-sm w-full max-w-md">
+
+    <div class="mb-6 flex justify-center">
+      <img src="pr_logo.jpg" alt="PrepRoute" class="h-20 w-auto"/>
+    </div>
+
+    <h3 class="text-2xl font-bold text-gray-900 mb-6 text-center">Login</h3>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-5">
+
+      <div>
+        <label class="block text-sm font-medium text-gray-800 mb-2">
+          User ID <span class="text-red-500">*</span>
+        </label>
+        <input
+          formControlName="userId"
+          type="text"
+          placeholder="Enter User ID"
+          class="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+          [class.border-red-400]="form.get('userId')?.invalid && form.get('userId')?.touched"
+          [class.border-green-400]="form.get('userId')?.valid && form.get('userId')?.touched"
+        />
+        @if (form.get('userId')?.invalid && form.get('userId')?.touched) {
+          <p class="text-red-500 text-xs mt-1 flex items-center gap-1">
+            <i class="fa-solid fa-circle-xmark fa-xs"></i>
+            User ID is required
+          </p>
+        }
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-800 mb-2">
+          Password <span class="text-red-500">*</span>
+        </label>
+
+        <div class="relative">
+          <input
+            formControlName="password"
+            [type]="showPassword() ? 'text' : 'password'"
+            placeholder="Enter Password"
+            class="w-full border border-gray-200 rounded-lg px-4 py-3 pr-10 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+            [class.border-red-400]="passwordControl?.invalid && passwordControl?.touched"
+            [class.border-green-400]="passwordControl?.valid && passwordControl?.touched"
+            (input)="onPasswordInput()"
+          />
+
+          @if (passwordControl?.value) {
+            <button
+              type="button"
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              (click)="showPassword.set(!showPassword())">
+              <i class="fa-solid text-sm"
+                [class.fa-eye]="!showPassword()"
+                [class.fa-eye-slash]="showPassword()">
+              </i>
+            </button>
+          }
+        </div>
+
+        @if (showPasswordRules()) {
+          <div class="mt-2 space-y-1">
+
+            <p class="text-xs flex items-center gap-1.5"
+              [class.text-green-600]="!passwordControl?.hasError('minLength')"
+              [class.text-red-500]="passwordControl?.hasError('minLength')">
+              <i class="fa-solid fa-xs"
+                [class.fa-circle-check]="!passwordControl?.hasError('minLength')"
+                [class.fa-circle-xmark]="passwordControl?.hasError('minLength')">
+              </i>
+              Minimum 8 characters
+            </p>
+
+            <p class="text-xs flex items-center gap-1.5"
+              [class.text-green-600]="!passwordControl?.hasError('noLetter') && !passwordControl?.hasError('noNumber')"
+              [class.text-red-500]="passwordControl?.hasError('noLetter') || passwordControl?.hasError('noNumber')">
+              <i class="fa-solid fa-xs"
+                [class.fa-circle-check]="!passwordControl?.hasError('noLetter') && !passwordControl?.hasError('noNumber')"
+                [class.fa-circle-xmark]="passwordControl?.hasError('noLetter') || passwordControl?.hasError('noNumber')">
+              </i>
+              Must include letters and numbers
+            </p>
+
+            <p class="text-xs flex items-center gap-1.5"
+              [class.text-green-600]="!passwordControl?.hasError('hasSpace')"
+              [class.text-red-500]="passwordControl?.hasError('hasSpace')">
+              <i class="fa-solid fa-xs"
+                [class.fa-circle-check]="!passwordControl?.hasError('hasSpace')"
+                [class.fa-circle-xmark]="passwordControl?.hasError('hasSpace')">
+              </i>
+              No spaces allowed
+            </p>
+
+          </div>
+        }
+
+        @if (passwordControl?.touched && !showPasswordRules() && passwordControl?.hasError('required')) {
+          <p class="text-red-500 text-xs mt-1 flex items-center gap-1">
+            <i class="fa-solid fa-circle-xmark fa-xs"></i>
+            Password is required
+          </p>
+        }
+      </div>
+
+      <!-- Submit -->
+      <button
+        type="submit"
+        [disabled]="loading()"
+        class="w-full bg-blue-500 text-white py-3 rounded-lg font-medium hover:bg-blue-600 disabled:opacity-50 transition-colors text-sm flex items-center justify-center gap-2">
+        @if (loading()) {
+          <i class="fa-solid fa-spinner fa-spin text-sm"></i>
+          Logging in...
+        } @else {
+          Login
+        }
+      </button>
+
+    </form>
+  </div>
+</div>
