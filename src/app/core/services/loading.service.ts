@@ -3,8 +3,8 @@ import { Injectable, signal } from '@angular/core';
 @Injectable({ providedIn: 'root' })
 
 export class LoadingService {
-  isLoading = signal(false);
+    isLoading = signal(false);
 
-  show() { this.isLoading.set(true); }
-  hide() { this.isLoading.set(false); }
+    show() { this.isLoading.set(true); }
+    hide() { this.isLoading.set(false); }
 }

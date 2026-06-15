@@ -1,194 +1,8 @@
-<!-- <div class="bg-white rounded-xl border border-slate-200">
-
-  <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
-    <div>
-      <h2 class="text-base font-semibold text-slate-800">All Tests</h2>
-      <p class="text-xs text-slate-400 mt-0.5">Manage and track all your tests</p>
-    </div>
-    <div class="flex items-center gap-3">
-      <div class="relative">
-        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-        <input
-          [ngModel]="searchQuery()"
-          (ngModelChange)="onSearchChange($event)"
-          type="text"
-          placeholder="Search by name, subject or status..."
-          class="border border-slate-200 rounded-lg pl-8 pr-4 py-2 text-sm w-72 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        />
-      </div>
-      <button
-        (click)="router.navigate(['/tests/new'])"
-        class="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors whitespace-nowrap">
-        <i class="fa-solid fa-plus text-xs"></i>
-        Create Test
-      </button>
-    </div>
-  </div>
-
-  @if (loading()) {
-    <app-shimmer type="table" [rows]="10" />
-  }
-
-  @else if (pagedTests().length > 0) {
-    <div class="overflow-hidden">
-      <table class="w-full text-sm">
-        <thead>
-          <tr class="bg-slate-50 border-b border-slate-200">
-            <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider w-12">No.</th>
-            <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Name</th>
-            <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Subject</th>
-            <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
-            <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Created At</th>
-            <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Updated At</th>
-            <th class="px-4 py-3 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (test of pagedTests(); track test.id; let i = $index) {
-            <tr class="border-b border-slate-100 hover:bg-blue-50/40 transition-colors">
-              <td class="px-4 py-3.5 text-slate-400 text-xs font-medium">
-                {{ ((currentPage() - 1) * pageSize) + i + 1 }}
-              </td>
-              <td class="px-4 py-3.5 font-semibold text-slate-800">{{ test.name }}</td>
-              <td class="px-4 py-3.5 text-slate-500 text-xs">{{ test.subject }}</td>
-              <td class="px-4 py-3.5">
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
-                  [class]="test.status === 'live'
-                    ? 'bg-green-100 text-green-700 ring-1 ring-green-200'
-                    : test.status === 'unpublished'
-                    ? 'bg-orange-100 text-orange-700 ring-1 ring-orange-200'
-                    : 'bg-yellow-100 text-yellow-700 ring-1 ring-yellow-200'">
-                  <span class="w-1.5 h-1.5 rounded-full mr-1.5 inline-block"
-                    [class]="test.status === 'live'
-                      ? 'bg-green-500'
-                      : test.status === 'unpublished'
-                      ? 'bg-orange-500'
-                      : 'bg-yellow-500'">
-                  </span>
-                  {{ test.status || 'Draft' }}
-                </span>
-              </td>
-              <td class="px-4 py-3.5 text-slate-400 text-xs">
-                {{ test.created_at ? (test.created_at | date: 'mediumDate') : '—' }}
-              </td>
-              <td class="px-4 py-3.5 text-slate-400 text-xs">
-                {{ test.updated_at ? (test.updated_at | date: 'mediumDate') : '—' }}
-              </td>
-              <td class="px-2 py-3.5">
-                <div class="flex items-center justify-center gap-0.5">
-                  <button title="Edit"
-                    class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:bg-blue-50 hover:text-blue-600 transition-colors cursor-pointer"
-                    (click)="router.navigate(['tests', test.id, 'edit'])">
-                    <i class="fa-solid fa-pen-to-square text-xs"></i>
-                  </button>
-                  <button title="Add Questions"
-                    class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:bg-green-50 hover:text-green-600 transition-colors cursor-pointer"
-                    (click)="router.navigate(['tests', test.id, 'questions'])">
-                    <i class="fa-solid fa-circle-plus text-xs"></i>
-                  </button>
-                  <button title="Preview"
-                    class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:bg-purple-50 hover:text-purple-600 transition-colors cursor-pointer"
-                    (click)="router.navigate(['tests', test.id, 'preview'])">
-                    <i class="fa-solid fa-eye text-xs"></i>
-                  </button>
-                  <button title="Delete"
-                    class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:bg-red-50 hover:text-red-500 transition-colors cursor-pointer"
-                    (click)="onDelete(test.id)">
-                    <i class="fa-solid fa-trash text-xs"></i>
-                  </button>
-                </div>
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    </div>
-  }
-
-  @else {
-    <div class="flex flex-col items-center justify-center py-20 text-center">
-      @if (searchQuery()) {
-        <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4">
-          <i class="fa-solid fa-magnifying-glass text-2xl text-slate-400"></i>
-        </div>
-        <p class="text-slate-700 font-semibold mb-1">No results found</p>
-        <p class="text-slate-400 text-sm mb-4">
-          No tests matched "<span class="font-medium text-slate-500">{{ searchQuery() }}</span>"
-        </p>
-        <button
-          (click)="onSearchChange('')"
-          class="text-sm text-blue-600 hover:underline cursor-pointer">
-          Clear search
-        </button>
-      } @else {
-        <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-4">
-          <i class="fa-solid fa-file-circle-plus text-2xl text-blue-400"></i>
-        </div>
-        <p class="text-slate-700 font-semibold mb-1">No tests yet</p>
-        <p class="text-slate-400 text-sm mb-5">Get started by creating your first test.</p>
-        <button
-          (click)="router.navigate(['/tests/new'])"
-          class="inline-flex items-center gap-2 bg-blue-600 text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
-          <i class="fa-solid fa-plus text-xs"></i>
-          Create Test
-        </button>
-      }
-    </div>
-  }
-
-</div>
-
-@if (!loading() && totalPages() > 1) {
-  <div class="flex items-center justify-between mt-4 px-1">
-
-    <p class="text-xs text-slate-400">
-      Page {{ currentPage() }} of {{ totalPages() }}
-    </p>
-
-    <div class="flex items-center gap-1.5">
-      <button
-        class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-        (click)="currentPage.set(currentPage() - 1)"
-        [disabled]="currentPage() === 1">
-        <i class="fa-solid fa-chevron-left text-xs"></i>
-        Previous
-      </button>
-
-      @for (item of getPagination(); track $index) {
-        @if (item === '...') {
-          <span class="w-8 h-8 flex items-center justify-center text-slate-400 text-sm">···</span>
-        } @else {
-          <button
-            class="w-8 h-8 text-xs rounded-lg border transition-colors cursor-pointer font-medium"
-            [class.bg-blue-600]="item === currentPage()"
-            [class.text-white]="item === currentPage()"
-            [class.border-blue-600]="item === currentPage()"
-            [class.bg-white]="item !== currentPage()"
-            [class.text-slate-600]="item !== currentPage()"
-            [class.border-slate-200]="item !== currentPage()"
-            [class.hover:bg-slate-50]="item !== currentPage()"
-            (click)="currentPage.set(+item)">
-            {{ item }}
-          </button>
-        }
-      }
-
-      <button
-        class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-        (click)="currentPage.set(currentPage() + 1)"
-        [disabled]="currentPage() >= totalPages()">
-        Next
-        <i class="fa-solid fa-chevron-right text-xs"></i>
-      </button>
-    </div>
-
-  </div>
-} -->
-  <!-- Search & Create — always visible -->
 <div class="bg-white rounded-xl border border-slate-200">
 
   <!-- Header -->
-  <div class="px-4 md:px-6 py-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+  <div
+    class="px-4 md:px-6 py-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
     <div>
       <h2 class="text-base font-semibold text-slate-800">All Tests</h2>
       <p class="text-xs text-slate-400 mt-0.5">Manage and track all your tests</p>
@@ -196,16 +10,11 @@
     <div class="flex items-center gap-3">
       <div class="relative flex-1 sm:flex-none">
         <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-        <input
-          [ngModel]="searchQuery()"
-          (ngModelChange)="onSearchChange($event)"
-          type="text"
+        <input [ngModel]="searchQuery()" (ngModelChange)="onSearchChange($event)" type="text"
           placeholder="Search by name, subject or status..."
-          class="border border-slate-200 rounded-lg pl-8 pr-4 py-2 text-sm w-full sm:w-64 md:w-72 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        />
+          class="border border-slate-200 rounded-lg pl-8 pr-4 py-2 text-sm w-full sm:w-64 md:w-72 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
       </div>
-      <button
-        (click)="router.navigate(['/tests/new'])"
+      <button (click)="router.navigate(['/tests/new'])"
         class="inline-flex items-center gap-2 bg-blue-600 text-white px-3 md:px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors whitespace-nowrap shrink-0">
         <i class="fa-solid fa-plus text-xs"></i>
         <span class="hidden sm:inline">Create Test</span>
@@ -216,232 +25,214 @@
 
   <!-- Shimmer while loading -->
   @if (loading()) {
-    <app-shimmer type="table" [rows]="10" />
+  <app-shimmer type="table" [rows]="10" />
   }
 
   <!-- Table — desktop -->
   @else if (pagedTests().length > 0) {
 
-    <!-- Desktop Table (md and above) -->
-    <div class="hidden md:block overflow-x-auto">
-      <table class="w-full text-sm">
-        <thead>
-          <tr class="bg-slate-50 border-b border-slate-200">
-            <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider w-12">No.</th>
-            <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Name</th>
-            <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Subject</th>
-            <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Created At</th>
-            <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Updated At</th>
-            <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
-            <th class="px-4 py-3 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (test of pagedTests(); track test.id; let i = $index) {
-            <tr class="border-b border-slate-100 hover:bg-blue-50/40 transition-colors">
-              <td class="px-4 py-3.5 text-slate-400 text-xs font-medium">
-                {{ ((currentPage() - 1) * pageSize) + i + 1 }}
-              </td>
-              <td class="px-4 py-3.5 font-semibold text-slate-800">{{ test.name }}</td>
-              <td class="px-4 py-3.5 text-slate-500 text-xs">{{ test.subject }}</td>
-              
-              <td class="px-4 py-3.5 text-slate-400 text-xs">
-                {{ test.created_at ? (test.created_at | date: 'mediumDate') : '—' }}
-              </td>
-              <td class="px-4 py-3.5 text-slate-400 text-xs">
-                {{ test.updated_at ? (test.updated_at | date: 'mediumDate') : '—' }}
-              </td>
-              <td class="px-4 py-3.5">
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
-                  [class]="test.status === 'live'
+  <div class="hidden md:block overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="bg-slate-50 border-b border-slate-200">
+          <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider w-12">No.</th>
+          <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Name</th>
+          <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Subject</th>
+          <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Created At</th>
+          <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Updated At</th>
+          <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
+          <th class="px-4 py-3 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (test of pagedTests(); track test.id; let i = $index) {
+        <tr class="border-b border-slate-100 hover:bg-blue-50/40 transition-colors">
+          <td class="px-4 py-3.5 text-slate-400 text-xs font-medium">
+            {{ ((currentPage() - 1) * pageSize) + i + 1 }}
+          </td>
+          <td class="px-4 py-3.5 font-semibold text-slate-800">{{ test.name }}</td>
+          <td class="px-4 py-3.5 text-slate-500 text-xs">{{ test.subject }}</td>
+
+          <td class="px-4 py-3.5 text-slate-400 text-xs">
+            {{ test.created_at ? (test.created_at | date: 'mediumDate') : '—' }}
+          </td>
+          <td class="px-4 py-3.5 text-slate-400 text-xs">
+            {{ test.updated_at ? (test.updated_at | date: 'mediumDate') : '—' }}
+          </td>
+          <td class="px-4 py-3.5">
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" [class]="test.status === 'live'
                     ? 'bg-green-100 text-green-700 ring-1 ring-green-200'
                     : test.status === 'unpublished'
                     ? 'bg-orange-100 text-orange-700 ring-1 ring-orange-200'
                     : 'bg-yellow-100 text-yellow-700 ring-1 ring-yellow-200'">
-                  <span class="w-1.5 h-1.5 rounded-full mr-1.5 inline-block"
-                    [class]="test.status === 'live' ? 'bg-green-500'
+              <span class="w-1.5 h-1.5 rounded-full mr-1.5 inline-block" [class]="test.status === 'live' ? 'bg-green-500'
                       : test.status === 'unpublished' ? 'bg-orange-500'
                       : 'bg-yellow-500'">
-                  </span>
-                  {{ test.status || 'Draft' }}
-                </span>
-              </td>
-              <td class="px-2 py-3.5">
-                <div class="flex items-center justify-center gap-0.5">
-                  <button title="Edit"
-                    class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:bg-blue-50 hover:text-blue-600 transition-colors cursor-pointer"
-                    (click)="router.navigate(['tests', test.id, 'edit'])">
-                    <i class="fa-solid fa-pen-to-square text-xs"></i>
-                  </button>
-                  <button title="Add Questions"
-                    class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:bg-green-50 hover:text-green-600 transition-colors cursor-pointer"
-                    (click)="router.navigate(['tests', test.id, 'questions'])">
-                    <i class="fa-solid fa-circle-plus text-xs"></i>
-                  </button>
-                  <button title="Preview"
-                    class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:bg-purple-50 hover:text-purple-600 transition-colors cursor-pointer"
-                    (click)="router.navigate(['tests', test.id, 'preview'])">
-                    <i class="fa-solid fa-eye text-xs"></i>
-                  </button>
-                  <button title="Delete"
-                    class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:bg-red-50 hover:text-red-500 transition-colors cursor-pointer"
-                    (click)="onDelete(test.id)">
-                    <i class="fa-solid fa-trash text-xs"></i>
-                  </button>
-                </div>
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Mobile Card View (below md) -->
-    <div class="md:hidden divide-y divide-slate-100">
-      @for (test of pagedTests(); track test.id; let i = $index) {
-        <div class="p-4 hover:bg-slate-50 transition-colors">
-
-          <!-- Top row: number + name + status -->
-          <div class="flex items-start justify-between gap-2 mb-2">
-            <div class="flex items-center gap-2">
-              <span class="text-xs text-slate-400 font-medium w-5">
-                {{ ((currentPage() - 1) * pageSize) + i + 1 }}.
               </span>
-              <p class="font-semibold text-slate-800 text-sm">{{ test.name }}</p>
+              {{ test.status || 'Draft' }}
+            </span>
+          </td>
+          <td class="px-2 py-3.5">
+            <div class="flex items-center justify-center gap-0.5">
+              <button title="Edit"
+                class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:bg-blue-50 hover:text-blue-600 transition-colors cursor-pointer"
+                (click)="router.navigate(['tests', test.id, 'edit'])">
+                <i class="fa-solid fa-pen-to-square text-xs"></i>
+              </button>
+              <button title="Add Questions"
+                class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:bg-green-50 hover:text-green-600 transition-colors cursor-pointer"
+                (click)="router.navigate(['tests', test.id, 'questions'])">
+                <i class="fa-solid fa-circle-plus text-xs"></i>
+              </button>
+              <button title="Preview"
+                class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:bg-purple-50 hover:text-purple-600 transition-colors cursor-pointer"
+                (click)="router.navigate(['tests', test.id, 'preview'])">
+                <i class="fa-solid fa-eye text-xs"></i>
+              </button>
+              <button title="Delete"
+                class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:bg-red-50 hover:text-red-500 transition-colors cursor-pointer"
+                (click)="onDelete(test.id)">
+                <i class="fa-solid fa-trash text-xs"></i>
+              </button>
             </div>
-            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium shrink-0"
-              [class]="test.status === 'live'
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="md:hidden divide-y divide-slate-100">
+    @for (test of pagedTests(); track test.id; let i = $index) {
+    <div class="p-4 hover:bg-slate-50 transition-colors">
+
+      <div class="flex items-start justify-between gap-2 mb-2">
+        <div class="flex items-center gap-2">
+          <span class="text-xs text-slate-400 font-medium w-5">
+            {{ ((currentPage() - 1) * pageSize) + i + 1 }}.
+          </span>
+          <p class="font-semibold text-slate-800 text-sm">{{ test.name }}</p>
+        </div>
+        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium shrink-0" [class]="test.status === 'live'
                 ? 'bg-green-100 text-green-700'
                 : test.status === 'unpublished'
                 ? 'bg-orange-100 text-orange-700'
                 : 'bg-yellow-100 text-yellow-700'">
-              <span class="w-1.5 h-1.5 rounded-full mr-1 inline-block"
-                [class]="test.status === 'live' ? 'bg-green-500'
+          <span class="w-1.5 h-1.5 rounded-full mr-1 inline-block" [class]="test.status === 'live' ? 'bg-green-500'
                   : test.status === 'unpublished' ? 'bg-orange-500'
                   : 'bg-yellow-500'">
-              </span>
-              {{ test.status || 'Draft' }}
-            </span>
-          </div>
+          </span>
+          {{ test.status || 'Draft' }}
+        </span>
+      </div>
 
-          <!-- Subject + Date -->
-          <div class="ml-7 mb-3 space-y-1">
-            <p class="text-xs text-slate-500">
-              <span class="text-slate-400">Subject:</span> {{ test.subject }}
-            </p>
-            <p class="text-xs text-slate-400">
-              Created: {{ test.created_at ? (test.created_at | date: 'mediumDate') : '—' }}
-            </p>
-          </div>
+      <div class="ml-7 mb-3 space-y-1">
+        <p class="text-xs text-slate-500">
+          <span class="text-slate-400">Subject:</span> {{ test.subject }}
+        </p>
+        <p class="text-xs text-slate-400">
+          Created: {{ test.created_at ? (test.created_at | date: 'mediumDate') : '—' }}
+        </p>
+      </div>
 
-          <!-- Action Buttons -->
-          <div class="ml-7 flex items-center gap-1">
-            <button title="Edit"
-              class="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 transition-colors"
-              (click)="router.navigate(['tests', test.id, 'edit'])">
-              <i class="fa-solid fa-pen-to-square text-xs"></i>
-              Edit
-            </button>
-            <button title="Add Questions"
-              class="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium text-green-600 bg-green-50 hover:bg-green-100 transition-colors"
-              (click)="router.navigate(['tests', test.id, 'questions'])">
-              <i class="fa-solid fa-circle-plus text-xs"></i>
-              Questions
-            </button>
-            <button title="Preview"
-              class="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium text-purple-600 bg-purple-50 hover:bg-purple-100 transition-colors"
-              (click)="router.navigate(['tests', test.id, 'preview'])">
-              <i class="fa-solid fa-eye text-xs"></i>
-              Preview
-            </button>
-            <button title="Delete"
-              class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:bg-red-50 hover:text-red-500 transition-colors"
-              (click)="onDelete(test.id)">
-              <i class="fa-solid fa-trash text-xs"></i>
-            </button>
-          </div>
+      <div class="ml-7 flex items-center gap-1">
+        <button title="Edit"
+          class="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 transition-colors"
+          (click)="router.navigate(['tests', test.id, 'edit'])">
+          <i class="fa-solid fa-pen-to-square text-xs"></i>
+          Edit
+        </button>
+        <button title="Add Questions"
+          class="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium text-green-600 bg-green-50 hover:bg-green-100 transition-colors"
+          (click)="router.navigate(['tests', test.id, 'questions'])">
+          <i class="fa-solid fa-circle-plus text-xs"></i>
+          Questions
+        </button>
+        <button title="Preview"
+          class="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium text-purple-600 bg-purple-50 hover:bg-purple-100 transition-colors"
+          (click)="router.navigate(['tests', test.id, 'preview'])">
+          <i class="fa-solid fa-eye text-xs"></i>
+          Preview
+        </button>
+        <button title="Delete"
+          class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:bg-red-50 hover:text-red-500 transition-colors"
+          (click)="onDelete(test.id)">
+          <i class="fa-solid fa-trash text-xs"></i>
+        </button>
+      </div>
 
-        </div>
-      }
     </div>
+    }
+  </div>
 
   }
 
-  <!-- Empty state -->
   @else {
-    <div class="flex flex-col items-center justify-center py-16 text-center px-4">
-      @if (searchQuery()) {
-        <div class="w-14 h-14 bg-slate-100 rounded-full flex items-center justify-center mb-4">
-          <i class="fa-solid fa-magnifying-glass text-xl text-slate-400"></i>
-        </div>
-        <p class="text-slate-700 font-semibold mb-1">No results found</p>
-        <p class="text-slate-400 text-sm mb-4">
-          No tests matched "<span class="font-medium text-slate-500">{{ searchQuery() }}</span>"
-        </p>
-        <button (click)="onSearchChange('')"
-          class="text-sm text-blue-600 hover:underline cursor-pointer">
-          Clear search
-        </button>
-      } @else {
-        <div class="w-14 h-14 bg-blue-50 rounded-full flex items-center justify-center mb-4">
-          <i class="fa-solid fa-file-circle-plus text-xl text-blue-400"></i>
-        </div>
-        <p class="text-slate-700 font-semibold mb-1">No tests yet</p>
-        <p class="text-slate-400 text-sm mb-5">Get started by creating your first test.</p>
-        <button (click)="router.navigate(['/tests/new'])"
-          class="inline-flex items-center gap-2 bg-blue-600 text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
-          <i class="fa-solid fa-plus text-xs"></i>
-          Create Test
-        </button>
-      }
+  <div class="flex flex-col items-center justify-center py-16 text-center px-4">
+    @if (searchQuery()) {
+    <div class="w-14 h-14 bg-slate-100 rounded-full flex items-center justify-center mb-4">
+      <i class="fa-solid fa-magnifying-glass text-xl text-slate-400"></i>
     </div>
+    <p class="text-slate-700 font-semibold mb-1">No results found</p>
+    <p class="text-slate-400 text-sm mb-4">
+      No tests matched "<span class="font-medium text-slate-500">{{ searchQuery() }}</span>"
+    </p>
+    <button (click)="onSearchChange('')" class="text-sm text-blue-600 hover:underline cursor-pointer">
+      Clear search
+    </button>
+    } @else {
+    <div class="w-14 h-14 bg-blue-50 rounded-full flex items-center justify-center mb-4">
+      <i class="fa-solid fa-file-circle-plus text-xl text-blue-400"></i>
+    </div>
+    <p class="text-slate-700 font-semibold mb-1">No tests yet</p>
+    <p class="text-slate-400 text-sm mb-5">Get started by creating your first test.</p>
+    <button (click)="router.navigate(['/tests/new'])"
+      class="inline-flex items-center gap-2 bg-blue-600 text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
+      <i class="fa-solid fa-plus text-xs"></i>
+      Create Test
+    </button>
+    }
+  </div>
   }
 
 </div>
 
-<!-- Pagination -->
 @if (!loading() && totalPages() > 1) {
-  <div class="flex flex-col sm:flex-row items-center justify-between gap-3 mt-4 px-1">
+<div class="flex flex-col sm:flex-row items-center justify-between gap-3 mt-4 px-1">
 
-    <p class="text-xs text-slate-400 order-2 sm:order-1">
-      Page {{ currentPage() }} of {{ totalPages() }}
-    </p>
+  <p class="text-xs text-slate-400 order-2 sm:order-1">
+    Page {{ currentPage() }} of {{ totalPages() }}
+  </p>
 
-    <div class="flex items-center gap-1.5 order-1 sm:order-2">
-      <button
-        class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-        (click)="currentPage.set(currentPage() - 1)"
-        [disabled]="currentPage() === 1">
-        <i class="fa-solid fa-chevron-left text-xs"></i>
-        <span class="hidden sm:inline">Previous</span>
-      </button>
+  <div class="flex items-center gap-1.5 order-1 sm:order-2">
+    <button
+      class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+      (click)="currentPage.set(currentPage() - 1)" [disabled]="currentPage() === 1">
+      <i class="fa-solid fa-chevron-left text-xs"></i>
+      <span class="hidden sm:inline">Previous</span>
+    </button>
 
-      @for (item of getPagination(); track $index) {
-        @if (item === '...') {
-          <span class="w-8 h-8 flex items-center justify-center text-slate-400 text-sm">···</span>
-        } @else {
-          <button
-            class="w-8 h-8 text-xs rounded-lg border transition-colors cursor-pointer font-medium"
-            [class.bg-blue-600]="item === currentPage()"
-            [class.text-white]="item === currentPage()"
-            [class.border-blue-600]="item === currentPage()"
-            [class.bg-white]="item !== currentPage()"
-            [class.text-slate-600]="item !== currentPage()"
-            [class.border-slate-200]="item !== currentPage()"
-            (click)="currentPage.set(+item)">
-            {{ item }}
-          </button>
-        }
-      }
+    @for (item of getPagination(); track $index) {
+    @if (item === '...') {
+    <span class="w-8 h-8 flex items-center justify-center text-slate-400 text-sm">···</span>
+    } @else {
+    <button class="w-8 h-8 text-xs rounded-lg border transition-colors cursor-pointer font-medium"
+      [class.bg-blue-600]="item === currentPage()" [class.text-white]="item === currentPage()"
+      [class.border-blue-600]="item === currentPage()" [class.bg-white]="item !== currentPage()"
+      [class.text-slate-600]="item !== currentPage()" [class.border-slate-200]="item !== currentPage()"
+      (click)="currentPage.set(+item)">
+      {{ item }}
+    </button>
+    }
+    }
 
-      <button
-        class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-        (click)="currentPage.set(currentPage() + 1)"
-        [disabled]="currentPage() >= totalPages()">
-        <span class="hidden sm:inline">Next</span>
-        <i class="fa-solid fa-chevron-right text-xs"></i>
-      </button>
-    </div>
-
+    <button
+      class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+      (click)="currentPage.set(currentPage() + 1)" [disabled]="currentPage() >= totalPages()">
+      <span class="hidden sm:inline">Next</span>
+      <i class="fa-solid fa-chevron-right text-xs"></i>
+    </button>
   </div>
+
+</div>
 }

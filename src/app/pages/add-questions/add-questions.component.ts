@@ -185,7 +185,6 @@ export class AddQuestionsComponent implements OnInit {
     const topicId = (event.target as HTMLSelectElement).value;
     this.qForm.patchValue({ sub_topic_id: '' });
     if (topicId) {
-      // POST /sub-topics/multi-topics { topicIds: [topicId] }
       this.subjectService.getSubTopicsByTopicList([topicId]).subscribe((res) =>
         this.subTopics.set(res.data),
       );
@@ -226,18 +225,16 @@ export class AddQuestionsComponent implements OnInit {
   }
 
   startEdit(index: number) {
-    // your existing edit logic here...
     this.editIndex.set(index);
     const q = this.stateService.questions()[index];
     this.qForm.patchValue(q);
 
-    // ✅ Scroll to form smoothly
     setTimeout(() => {
       this.questionFormRef.nativeElement.scrollIntoView({
         behavior: 'smooth',
         block: 'start'
       });
-    }, 100);  // small delay ensures form has updated before scrolling
+    }, 100);
   }
 
   cancelEdit() {
@@ -255,7 +252,7 @@ export class AddQuestionsComponent implements OnInit {
       option4: q.option4,
       correct_option: q.correct_option,
       test_id: this.id,
-      subject: this.subjectId(), // ✅ required by API despite not being in docs
+      subject: this.subjectId(), 
     };
   
     const optionalString = (value: unknown) =>
