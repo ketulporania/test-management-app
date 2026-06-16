@@ -5,6 +5,7 @@
 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 md:p-8">
   <form [formGroup]="form">
 
+    <!-- Row 1: Test Name + Subject -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6">
       <div>
         <label class="block text-sm font-medium mb-1">
@@ -48,6 +49,7 @@
       </div>
     </div>
 
+    <!-- Row 2: Test Type -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6">
       <div>
         <label class="block text-sm font-medium mb-1">
@@ -76,51 +78,87 @@
       </div>
     </div>
 
+    <!-- Row 3: Topics Multi-select -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6">
+
+      <!-- Topics -->
       <div>
         <label class="block text-sm font-medium mb-1">Topics</label>
-        <div class="relative">
-          <select
-            formControlName="topic"
-            (change)="onTopicChange($event)"
-            class="w-full appearance-none border rounded-lg px-3 py-2 text-sm text-gray-500 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-            [class.opacity-50]="!topics().length"
-          >
-            <option value="" disabled selected>Choose from Drop-down</option>
-            <option *ngFor="let t of topics()" [value]="t.id">{{ t.name }}</option>
-          </select>
-          <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
-            </svg>
-          </span>
-        </div>
-        @if (!topics().length && form.get('subject')?.value) {
-          <p class="text-slate-400 text-xs mt-1">No topics available for selected subject</p>
+        @if (!form.get('subject')?.value) {
+          <p class="text-slate-400 text-xs mt-1 border rounded-lg px-3 py-2">
+            Select a subject first
+          </p>
+        } @else if (!topics().length) {
+          <p class="text-slate-400 text-xs mt-1 border rounded-lg px-3 py-2">
+            No topics available for selected subject
+          </p>
+        } @else {
+          <div class="border rounded-lg px-3 py-2 max-h-36 overflow-y-auto space-y-2">
+            @for (t of topics(); track t.id) {
+              <label class="flex items-center gap-2 cursor-pointer hover:bg-slate-50 px-1 py-0.5 rounded">
+                <input
+                  type="checkbox"
+                  [checked]="isTopicSelected(t.id)"
+                  (change)="onTopicToggle(t.id)"
+                  class="w-4 h-4 accent-blue-600 rounded"
+                />
+                <span class="text-sm text-gray-700">{{ t.name }}</span>
+              </label>
+            }
+          </div>
+          @if (selectedTopicIds().length > 0) {
+            <div class="flex flex-wrap gap-1 mt-2">
+              @for (id of selectedTopicIds(); track id) {
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-50 text-blue-700 text-xs rounded-full border border-blue-200">
+                  {{ getTopicName(id) }}
+                  <button type="button" (click)="onTopicToggle(id)"
+                    class="hover:text-blue-900 font-bold leading-none">×</button>
+                </span>
+              }
+            </div>
+          }
         }
       </div>
 
+      <!-- Sub Topics -->
       <div>
         <label class="block text-sm font-medium mb-1">Sub Topics</label>
-        <div class="relative">
-          <select
-            formControlName="sub_topic"
-            class="w-full appearance-none border rounded-lg px-3 py-2 text-sm text-gray-500 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-            [class.opacity-50]="!subTopics().length"
-          >
-            <option value="" disabled selected>Choose from Drop-down</option>
-            <option *ngFor="let st of subTopics()" [value]="st.id">{{ st.name }}</option>
-          </select>
-          <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
-            </svg>
-          </span>
-        </div>
-        @if (!subTopics().length && form.get('topic')?.value) {
-          <p class="text-slate-400 text-xs mt-1">No sub-topics available for selected topic</p>
+        @if (!selectedTopicIds().length) {
+          <p class="text-slate-400 text-xs mt-1 border rounded-lg px-3 py-2">
+            Select topics first
+          </p>
+        } @else if (!subTopics().length) {
+          <p class="text-slate-400 text-xs mt-1 border rounded-lg px-3 py-2">
+            No sub-topics available
+          </p>
+        } @else {
+          <div class="border rounded-lg px-3 py-2 max-h-36 overflow-y-auto space-y-2">
+            @for (st of subTopics(); track st.id) {
+              <label class="flex items-center gap-2 cursor-pointer hover:bg-slate-50 px-1 py-0.5 rounded">
+                <input
+                  type="checkbox"
+                  [checked]="isSubTopicSelected(st.id)"
+                  (change)="onSubTopicToggle(st.id)"
+                  class="w-4 h-4 accent-blue-600 rounded"
+                />
+                <span class="text-sm text-gray-700">{{ st.name }}</span>
+              </label>
+            }
+          </div>
+          @if (selectedSubTopicIds().length > 0) {
+            <div class="flex flex-wrap gap-1 mt-2">
+              @for (id of selectedSubTopicIds(); track id) {
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-green-50 text-green-700 text-xs rounded-full border border-green-200">
+                  {{ getSubTopicName(id) }}
+                  <button type="button" (click)="onSubTopicToggle(id)"
+                    class="hover:text-green-900 font-bold leading-none">×</button>
+                </span>
+              }
+            </div>
+          }
         }
       </div>
+
     </div>
 
     <div class="mb-6">
@@ -146,47 +184,42 @@
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-
       <div>
         <label class="block text-sm font-medium mb-1">
           Wrong Answer <span class="text-red-500">*</span>
         </label>
-          <input formControlName="wrong_marks" type="number"
-          class="w-full border rounded-lg px-3 py-2 text-sm placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            [class.border-red-400]="form.get('wrong_marks')?.invalid && form.get('wrong_marks')?.touched"/>
+        <input formControlName="wrong_marks" type="number"
+          class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          [class.border-red-400]="form.get('wrong_marks')?.invalid && form.get('wrong_marks')?.touched"/>
         @if (form.get('wrong_marks')?.invalid && form.get('wrong_marks')?.touched) {
           <p class="text-red-500 text-xs mt-1">Wrong marks is required</p>
         }
       </div>
-
       <div>
         <label class="block text-sm font-medium mb-1">
           Unattempted <span class="text-red-500">*</span>
         </label>
-          <input formControlName="unattempt_marks" type="number"
-          class="w-full border rounded-lg px-3 py-2 text-sm placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        <input formControlName="unattempt_marks" type="number"
+          class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           [class.border-red-400]="form.get('unattempt_marks')?.invalid && form.get('unattempt_marks')?.touched"/>
         @if (form.get('unattempt_marks')?.invalid && form.get('unattempt_marks')?.touched) {
           <p class="text-red-500 text-xs mt-1">Unattempted marks is required</p>
         }
       </div>
-
       <div>
         <label class="block text-sm font-medium mb-1">
           Correct Answer <span class="text-red-500">*</span>
         </label>
-          <input formControlName="correct_marks" type="number"
-          class="w-full border rounded-lg px-3 py-2 text-sm placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        <input formControlName="correct_marks" type="number"
+          class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           [class.border-red-400]="form.get('correct_marks')?.invalid && form.get('correct_marks')?.touched"/>
         @if (form.get('correct_marks')?.invalid && form.get('correct_marks')?.touched) {
           <p class="text-red-500 text-xs mt-1">Correct marks is required</p>
         }
       </div>
-
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 mb-8">
-
       <div>
         <label class="block text-sm font-medium mb-1">
           No of Questions <span class="text-red-500">*</span>
@@ -198,7 +231,6 @@
           <p class="text-red-500 text-xs mt-1">Total questions is required</p>
         }
       </div>
-
       <div>
         <label class="block text-sm font-medium mb-1">
           Total Time (Minutes) <span class="text-red-500">*</span>
@@ -210,7 +242,6 @@
           <p class="text-red-500 text-xs mt-1">Total time is required</p>
         }
       </div>
-
       <div>
         <label class="block text-sm font-medium mb-1">
           Total Marks <span class="text-red-500">*</span>
@@ -222,9 +253,9 @@
           <p class="text-red-500 text-xs mt-1">Total marks is required</p>
         }
       </div>
-
     </div>
 
+    <!-- Action Buttons -->
     <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-4 border-t border-gray-100">
       <button type="button" (click)="goBack()"
         class="inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-medium text-gray-500 bg-white border border-gray-200 rounded-lg hover:bg-gray-200 hover:text-gray-700 transition-colors">
@@ -246,6 +277,7 @@
         }
       </button>
     </div>
+
   </form>
 </div>
 }

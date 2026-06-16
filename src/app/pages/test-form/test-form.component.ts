@@ -41,12 +41,13 @@ export class TestFormComponent implements OnInit {
     saving = signal(false);
     errorMsg = signal('');
 
+    selectedTopicIds = signal<string[]>([]);
+    selectedSubTopicIds = signal<string[]>([]);
+
     form = this.fb.group({
         name: ['', Validators.required],
         subject: ['', Validators.required],
         type: ['', Validators.required],
-        topic: [''],
-        sub_topic: [''],
         total_time: [null as number | null, Validators.required],
         difficulty: ['easy'],
         wrong_marks: [null as number | null, Validators.required],
@@ -98,9 +99,9 @@ export class TestFormComponent implements OnInit {
                         type: test.type || '',
                         difficulty: test.difficulty || 'easy',
                         total_time: test.total_time ?? null,
-                        wrong_marks: test.wrong_marks ?? -1,
-                        unattempt_marks: test.unattempt_marks ?? 0,
-                        correct_marks: test.correct_marks ?? 5,
+                        wrong_marks: test.wrong_marks ?? null,
+                        unattempt_marks: test.unattempt_marks ?? null,
+                        correct_marks: test.correct_marks ?? null,
                         total_questions: test.total_questions ?? null,
                         total_marks: test.total_marks ?? null,
                     });
@@ -110,30 +111,30 @@ export class TestFormComponent implements OnInit {
                             this.topics.set(topicsRes.data);
 
                             const rawTopics = test.topics || [];
-                            const resolvedTopicId = rawTopics.length
-                                ? (topicsRes.data.find((t) => t.id === rawTopics[0])?.id ||
-                                    topicsRes.data.find((t) =>
-                                        t.name.toLowerCase() === rawTopics[0]?.toLowerCase(),
-                                    )?.id || rawTopics[0])
-                                : '';
+                            const resolvedTopicIds = rawTopics
+                                .map((rt: string) =>
+                                    topicsRes.data.find((t) => t.id === rt)?.id ||
+                                    topicsRes.data.find((t) => t.name.toLowerCase() === rt?.toLowerCase())?.id ||
+                                    rt
+                                )
+                                .filter(Boolean);
 
-                            if (resolvedTopicId) {
-                                this.form.patchValue({ topic: resolvedTopicId });
+                            this.selectedTopicIds.set(resolvedTopicIds);
 
-                                this.subjectService.getSubTopicsByTopicList([resolvedTopicId]).subscribe((subRes) => {
+                            if (resolvedTopicIds.length > 0) {
+                                this.subjectService.getSubTopicsByTopicList(resolvedTopicIds).subscribe((subRes) => {
                                     this.subTopics.set(subRes.data);
 
                                     const rawSubTopics = test.sub_topics || [];
-                                    const resolvedSubTopicId = rawSubTopics.length
-                                        ? (subRes.data.find((st) => st.id === rawSubTopics[0])?.id ||
-                                            subRes.data.find((st) =>
-                                                st.name.toLowerCase() === rawSubTopics[0]?.toLowerCase(),
-                                            )?.id || rawSubTopics[0])
-                                        : '';
+                                    const resolvedSubTopicIds = rawSubTopics
+                                        .map((rst: string) =>
+                                            subRes.data.find((st) => st.id === rst)?.id ||
+                                            subRes.data.find((st) => st.name.toLowerCase() === rst?.toLowerCase())?.id ||
+                                            rst
+                                        )
+                                        .filter(Boolean);
 
-                                    if (resolvedSubTopicId) {
-                                        this.form.patchValue({ sub_topic: resolvedSubTopicId });
-                                    }
+                                    this.selectedSubTopicIds.set(resolvedSubTopicIds);
                                 });
                             }
                         });
@@ -149,7 +150,8 @@ export class TestFormComponent implements OnInit {
         const subjectId = (event.target as HTMLSelectElement).value;
         this.topics.set([]);
         this.subTopics.set([]);
-        this.form.patchValue({ topic: '', sub_topic: '' });
+        this.selectedTopicIds.set([]);
+        this.selectedSubTopicIds.set([]);
 
         if (subjectId) {
             this.subjectService.getTopicsBySubject(subjectId).subscribe((res) =>
@@ -158,30 +160,45 @@ export class TestFormComponent implements OnInit {
         }
     }
 
-    onTopicChange(event: Event) {
-        const topicId = (event.target as HTMLSelectElement).value;
-        this.subTopics.set([]);
-        this.form.patchValue({ sub_topic: '' });
+    onTopicToggle(topicId: string) {
+        const current = this.selectedTopicIds();
+        const updated = current.includes(topicId)
+            ? current.filter(id => id !== topicId)
+            : [...current, topicId];
 
-        if (topicId) {
-            this.subjectService.getSubTopicsByTopicList([topicId]).subscribe((res) =>
+        this.selectedTopicIds.set(updated);
+        this.selectedSubTopicIds.set([]);
+        this.subTopics.set([]);
+
+        if (updated.length > 0) {
+            this.subjectService.getSubTopicsByTopicList(updated).subscribe((res) =>
                 this.subTopics.set(res.data),
             );
         }
     }
 
-    increment(field: string) {
-        const current = this.form.get(field)?.value ?? 0;
-        this.form.get(field)?.setValue(+current + 1);
+    onSubTopicToggle(subTopicId: string) {
+        const current = this.selectedSubTopicIds();
+        const updated = current.includes(subTopicId)
+            ? current.filter(id => id !== subTopicId)
+            : [...current, subTopicId];
+        this.selectedSubTopicIds.set(updated);
     }
 
-    decrement(field: string) {
-        const current = this.form.get(field)?.value ?? 0;
-        this.form.get(field)?.setValue(+current - 1);
+    isTopicSelected(topicId: string): boolean {
+        return this.selectedTopicIds().includes(topicId);
     }
 
-    onCancel() {
-        this.router.navigate(['/tests']);
+    isSubTopicSelected(subTopicId: string): boolean {
+        return this.selectedSubTopicIds().includes(subTopicId);
+    }
+
+    getTopicName(id: string): string {
+        return this.topics().find(t => t.id === id)?.name || id;
+    }
+      
+    getSubTopicName(id: string): string {
+        return this.subTopics().find(st => st.id === id)?.name || id;
     }
 
     onNext(draftOnly: boolean) {
@@ -198,8 +215,8 @@ export class TestFormComponent implements OnInit {
             name: val.name!,
             type: val.type!,
             subject: val.subject!,
-            topics: val.topic ? [val.topic] : [],
-            sub_topics: val.sub_topic ? [val.sub_topic] : [],
+            topics: this.selectedTopicIds(),        
+            sub_topics: this.selectedSubTopicIds(), 
             difficulty: val.difficulty || 'easy',
             total_time: val.total_time ?? 0,
             wrong_marks: val.wrong_marks ?? -1,
@@ -223,7 +240,7 @@ export class TestFormComponent implements OnInit {
                 },
                 error: (err) => {
                     const apiError = err.error;
-                    this.toast.error(apiError.errors[0]?.msg);
+                    this.toast.error(apiError.errors?.[0]?.msg || 'Failed to update test');
                     this.saving.set(false);
                 },
             });
@@ -242,7 +259,7 @@ export class TestFormComponent implements OnInit {
                 },
                 error: (err) => {
                     const apiError = err.error;
-                    this.toast.error(apiError.errors[0]?.msg);
+                    this.toast.error(apiError.errors?.[0]?.msg || 'Failed to create test');
                     this.saving.set(false);
                 },
             });
