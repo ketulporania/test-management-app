@@ -85,6 +85,17 @@ export class PreviewPublishComponent implements OnInit {
         });
     }
 
+    renderQuestion(text: string): string {
+        if (!text) return '';
+        return text
+          .replace(/<img[^>]*>/gi, '[image attached]')
+          .replace(/%%B%%(.*?)%%\/B%%/gs, '<strong>$1</strong>')
+          .replace(/%%I%%(.*?)%%\/I%%/gs, '<em>$1</em>')
+          .replace(/%%U%%(.*?)%%\/U%%/gs, '<u>$1</u>')
+          .replace(/%%C%%(.*?)%%\/C%%/gs, '<code class="bg-gray-100 px-1 rounded text-xs font-mono">$1</code>')
+          .replace(/<(?!strong|\/strong|em|\/em|u|\/u|code|\/code)[^>]+>/gi, '');
+    }
+
     goBack() {
         this.location.back()
     }
