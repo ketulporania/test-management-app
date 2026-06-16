@@ -395,6 +395,17 @@ export class AddQuestionsComponent implements OnInit {
     });
   }
 
+  renderQuestion(text: string): string {
+    if (!text) return '';
+    return text
+      .replace(/<img[^>]*>/gi, '[image attached]')
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/_(.*?)_/g, '<em>$1</em>')
+      .replace(/__(.*?)__/g, '<u>$1</u>')
+      .replace(/`(.*?)`/g, '<code class="bg-gray-100 px-1 rounded text-xs">$1</code>')
+      .replace(/<(?!strong|\/strong|em|\/em|u|\/u|code|\/code)[^>]+>/gi, '');
+  }
+
   goBack() {
     const testId = this.testId;
     if (testId) { this.router.navigate(['/tests', testId, 'edit']); }

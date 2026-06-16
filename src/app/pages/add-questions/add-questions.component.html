@@ -60,7 +60,6 @@
     </div>
   </div>
 
-  <!-- ── Add/Edit Question Form ── -->
   <div class="bg-white rounded-xl shadow p-4 md:p-6 mx-4 mb-4">
     <h3 class="font-bold text-gray-800 mb-4">
       {{ editIndex() !== null ? 'Edit Question #' + (editIndex()! + 1) : 'Add Question Manually' }}
@@ -68,13 +67,11 @@
 
     <form #questionForm [formGroup]="qForm" (ngSubmit)="onAddQuestion()" class="space-y-4">
 
-      <!-- Question Text with Formatting Bar -->
       <div>
         <label class="block text-sm font-medium mb-1">
           Question Text <span class="text-red-500">*</span>
         </label>
 
-        <!-- Formatting Toolbar -->
         <div class="flex items-center gap-1 border border-b-0 border-gray-300 rounded-t-lg bg-gray-50 px-2 py-1.5">
           <button type="button" (click)="applyFormat('bold')" title="Bold — select text first"
             class="w-7 h-7 flex items-center justify-center rounded text-gray-600 hover:bg-gray-200 hover:text-gray-900 transition-colors cursor-pointer font-bold text-sm">
@@ -120,7 +117,6 @@
         }
       </div>
 
-      <!-- Correct Option -->
       <div>
         <label class="block text-sm font-medium mb-1">Correct Option <span class="text-red-500">*</span></label>
         <select formControlName="correct_option"
@@ -133,14 +129,12 @@
         </select>
       </div>
 
-      <!-- Explanation -->
       <div>
         <label class="block text-sm font-medium mb-1">Explanation (optional)</label>
         <textarea formControlName="explanation" rows="2" placeholder="Explain why the correct answer is correct..."
           class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
       </div>
 
-      <!-- Difficulty + Image Upload -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label class="block text-sm font-medium mb-1">Difficulty (optional)</label>
@@ -153,7 +147,6 @@
           </select>
         </div>
 
-        <!-- Image Upload -->
         <div>
           <label class="block text-sm font-medium mb-1">Question Image (optional)</label>
           @if (imagePreview()) {
@@ -180,7 +173,6 @@
         </div>
       </div>
 
-      <!-- Media URL (kept for backward compatibility) -->
       @if (!imagePreview()) {
         <div>
           <label class="block text-sm font-medium mb-1">Media URL (optional)</label>
@@ -189,7 +181,6 @@
         </div>
       }
 
-      <!-- Topic + Sub-topic -->
       @if (topics().length > 0) {
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
@@ -215,7 +206,6 @@
         </div>
       }
 
-      <!-- Form Buttons -->
       <div class="flex flex-wrap gap-3 pt-2">
         <button type="submit"
           class="inline-flex items-center gap-2 bg-blue-600 text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors cursor-pointer">
@@ -232,7 +222,6 @@
     </form>
   </div>
 
-  <!-- Added Questions List -->
   @if (stateService.questions().length > 0) {
     <div class="bg-white rounded-xl shadow p-4 md:p-6 mx-4 mb-4">
       <h3 class="font-bold text-gray-800 mb-4">Added Questions ({{ stateService.questionCount() }})</h3>
@@ -241,7 +230,7 @@
           <div class="border rounded-lg p-3 md:p-4 bg-gray-50">
             <div class="flex justify-between items-start gap-2">
               <div class="flex-1">
-                <p class="font-medium text-sm text-gray-800">Q{{ $index + 1 }}: {{ q.question }}</p>
+                <p class="font-medium text-sm text-gray-800">Q{{ $index + 1 }}: <span [innerHTML]="renderQuestion(q.question)"></span></p>
                 @if (q.media_url && q.media_url.startsWith('data:image')) {
                   <img [src]="q.media_url" alt="Question image" class="mt-2 h-16 w-auto rounded border object-cover" />
                 }
@@ -266,7 +255,6 @@
     </div>
   }
 
-  <!-- Bottom Action Buttons -->
   <div class="flex flex-col-reverse sm:flex-row sm:justify-between gap-3 px-4 pb-4 pt-4 border-t border-gray-100 mx-4 mb-4">
     <button (click)="goBack()"
       class="inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-medium text-gray-500 bg-white border border-gray-200 rounded-lg hover:bg-gray-200 hover:text-gray-700 transition-colors cursor-pointer">
